@@ -26,26 +26,21 @@ const getGameBySessionId = (sessionId, callback) => {
   });
 };
 
-//update the game state in the database
 const updateGameInDB = (sessionId, row, col, player) => {
   return new Promise((resolve, reject) => {
     db.get(`SELECT * FROM games WHERE session_id = ?`, [sessionId], (err, game) => {
       if (err) return reject(err);
       if (!game) return reject(new Error('Game not found'));
 
-      //parse the current board and moves
       let board = JSON.parse(game.board);
       let moves = JSON.parse(game.moves);
 
-      //update the board with the player's move
       board[row][col] = player;
       moves.push({ row, col, player });
 
-      //check for a winner or draw 
       const winner = checkWinner(board);
-      const status = winner ? 'finished' : 'ongoing';
+      const status = winner ? 'finished' : (moves.length === 9 ? 'draw' : 'ongoing');
 
-      //update the database with the new board and moves
       const sql = `
         UPDATE games
         SET board = ?, moves = ?, player_turn = ?, status = ?, winner = ?
@@ -63,7 +58,6 @@ const updateGameInDB = (sessionId, row, col, player) => {
       db.run(sql, params, function(err) {
         if (err) return reject(err);
 
-        
         resolve({
           board,
           moves,

@@ -6,17 +6,27 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: '*', 
+    origin: 'http://localhost:3001',
     methods: ['GET', 'POST'],
   },
 });
 
+//in-memory store for games
+let games = {};
+
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  socket.on('message', (data) => {
-    console.log('Received message from client:', data);
-    socket.emit('response', 'Hello from the server!');
+  socket.on('createGame', () => {
+    const gameId = `game_${Date.now()}`;
+    games[gameId] = {
+      players: [socket.id],
+      board: Array(3).fill().map(() => Array(3).fill(null)), //empty 3x3 board
+      turn: 'X',
+    };
+    socket.join(gameId); //join the room
+    socket.emit('gameCreated', { gameId });
+    console.log(`Game created: ${gameId}`);
   });
 
   socket.on('disconnect', (reason) => {
@@ -25,6 +35,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

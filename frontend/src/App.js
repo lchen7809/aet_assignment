@@ -6,16 +6,22 @@ const socket = io('http://localhost:3000', {
 });
 
 function App() {
-  const [gameId, setGameId] = useState(null);
+  const [gameId, setGameId] = useState('');
+  const [joinedGame, setJoinedGame] = useState(null);
 
   useEffect(() => {
-    socket.on('connect', () => {
-      console.log(`Connected to server: ${socket.id}`);
-    });
-
     socket.on('gameCreated', (data) => {
       setGameId(data.gameId);
       console.log('Game created:', data.gameId);
+    });
+
+    socket.on('playerJoined', (data) => {
+      setJoinedGame(data.gameId);
+      console.log('Joined game:', data);
+    });
+
+    socket.on('joinError', (data) => {
+      alert(data.message);
     });
 
     return () => {
@@ -27,11 +33,22 @@ function App() {
     socket.emit('createGame');
   };
 
+  const handleJoinGame = () => {
+    socket.emit('joinGame', gameId);
+  };
+
   return (
     <div className="App">
       <h1>Simple Socket.IO Game</h1>
       <button onClick={handleCreateGame}>Create Game</button>
-      {gameId && <p>Game ID: {gameId}</p>}
+      <input
+        type="text"
+        value={gameId}
+        onChange={(e) => setGameId(e.target.value)}
+        placeholder="Enter Game ID"
+      />
+      <button onClick={handleJoinGame}>Join Game</button>
+      {joinedGame && <p>Joined Game: {joinedGame}</p>}
     </div>
   );
 }

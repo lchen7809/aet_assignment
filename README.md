@@ -1,30 +1,42 @@
-tech stack used
+# Accessible Tic-Tac-Toe Game
 
-backend:
+## Overview
+This project is a real-time, accessible Tic-Tac-Toe game designed to be used by visually impaired players. It uses screen reader support and adheres to web accessibility standards.
 
-sqlite3
 
-express
+## Tech Stack
+- **Frontend:** React, Socket.IO client
+- **Backend:** Node.js, Express, SQLite, Socket.IO, DBbrowser (for viewing data)
 
-nodejs
 
-DBbrowser to view db
+## Setup Instructions
 
-Database fields: 
-id 
+### Backend Setup
+1. Navigate to the **backend** directory:
+   ```bash
+   cd backend
+2. Run the backend
+   ```bash
+   node index.js 
 
-session_id
+### Frontend Setup
+1. Navigate to the **frontend** directory:
+   ```bash
+   cd frontend
 
-board
+2. Run the frontend
+   ```bash
+   npm start
 
-player_turn
+### Database fields
+1. id
+2. session_id
+3. board
+4. player_turn
+5. status
+6. winner
+7. moves
 
-status
 
-winner
 
-moves
 
-frontend:
-
-react
